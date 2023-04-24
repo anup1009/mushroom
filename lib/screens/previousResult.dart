@@ -47,7 +47,9 @@ class _ImageScreenState extends State<ImageScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [Text('Previous results',style: TextStyle(fontSize: 50.0),),
+      children: [
+        SizedBox(height: 10.0,),
+        Text('Edible mushrooms found',style: TextStyle(fontSize: 20.0),),
         SizedBox(height: 20.0,),
         Expanded(
           child: Container(
