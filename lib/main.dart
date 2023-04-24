@@ -16,8 +16,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mushroom Classification',
+      debugShowCheckedModeBanner: false,
 
       home: LoadingScreen(),
     );
   }
 }
+// password=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
