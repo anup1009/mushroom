@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:mushroom/components/information.dart';
-class aboutUs extends StatefulWidget {
-  const aboutUs({Key? key}) : super(key: key);
+class aboutApp extends StatefulWidget {
+  const aboutApp({Key? key}) : super(key: key);
 
   @override
-  State<aboutUs> createState() => _aboutUsState();
+  State<aboutApp> createState() => _aboutAppState();
 }
 
-class _aboutUsState extends State<aboutUs> {
+class _aboutAppState extends State<aboutApp> {
   @override
   Widget build(BuildContext context) {
     return Container(
