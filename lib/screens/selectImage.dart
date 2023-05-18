@@ -13,7 +13,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-late double prediction;
+double prediction = 0.0;
 
 class SelectImage extends StatefulWidget {
   @override
@@ -29,11 +29,12 @@ class _SelectImageState extends State<SelectImage> {
   final picker = ImagePicker();
   File? _imageFile;
   String deviceName = "";
+  bool _imageSelected = false;
 
   Future<void> fetchData() async {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://20.124.164.198/predict'),
+      Uri.parse('http://192.168.1.12:5000/predict'),
     );
     request.files.add(
       await http.MultipartFile.fromPath('file', _imageFile!.path),
@@ -44,25 +45,72 @@ class _SelectImageState extends State<SelectImage> {
       // print(await response.stream.bytesToString());
       var predictedvalue = (await response.stream.bytesToString());
       print(predictedvalue);
+      //code is executed upto this poiint
       var responseJSON = await json.decode(predictedvalue);
 
-      var realValue = responseJSON["prediction"];
-      prediction = realValue;
-      print(realValue);
-      if (realValue > 0.7)  {
-        //display edible messages
-        setState(() {
-          popUpColor = Colors.green;
-          message = 'Hurray, The mushroom is Edible';
-          popUpColorinside = Colors.black;
-        });
-      } else {
-        //display unedible messages
-        setState(() {
-          popUpColor = Colors.red;
-          message = 'Oops! the project is Non Edible';
-          popUpColorinside = Colors.white;
-        });
+
+      if(responseJSON.containsKey('error')){
+          print('error encountered');
+          setState(() {
+            popUpColor = Colors.grey;
+            message = '!!!The server did not respond valid response or it didnt detect a mushroom!!!';
+            popUpColorinside = Colors.white;
+          });
+          //show dialoguebox
+          setState(() {
+            isLoading = false;
+          });
+          showDialog(
+              context: this.context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  backgroundColor: popUpColor,
+                  title: Text('Edibility Test',style: TextStyle(color: popUpColorinside),),
+                  content: Text(
+                    message!,
+                    style: TextStyle(color: popUpColorinside),
+                  ),
+                  actions: [
+                    TextButton(
+                      child: Text('Close', style: TextStyle(color: popUpColorinside)),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              });
+
+
+
+      }
+
+
+      else if (responseJSON.containsKey('prediction')){
+        print('this block executed');
+           prediction = responseJSON["prediction"];
+          print('no error');
+          if (prediction > 0.7)  {
+            //display edible messages
+            setState(() {
+              popUpColor = Colors.green;
+              message = 'Hurray, The mushroom is Edible';
+              popUpColorinside = Colors.black;
+            });
+          } else {
+            //display unedible messages
+            setState(() {
+              popUpColor = Colors.red;
+              message = 'Oops! the mushroom is Non Edible';
+              popUpColorinside = Colors.white;
+            });
+
+
+
+
+          }
+
+      // var realValue = ;
 
         // _showPopUpEdible(context);
         setState(() {
@@ -73,7 +121,7 @@ class _SelectImageState extends State<SelectImage> {
             builder: (BuildContext context) {
               return AlertDialog(
                 backgroundColor: popUpColor,
-                title: Text('Edibility Test'),
+                title: Text('Edibility Test',style: TextStyle(color: popUpColorinside),),
                 content: Text(
                   message!,
                   style: TextStyle(color: popUpColorinside),
@@ -95,7 +143,33 @@ class _SelectImageState extends State<SelectImage> {
         // print(await response.stream.bytesToString());
       });
     } else {
+      setState(() {
+        isLoading = false;
+      });
+      showDialog(
+          context: this.context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: popUpColor,
+              title: Text('Edibility Test',style: TextStyle(color: popUpColorinside),),
+              content: Text(
+                message!,
+                style: TextStyle(color: popUpColorinside),
+              ),
+              actions: [
+                TextButton(
+                  child: Text('Close', style: TextStyle(color: popUpColorinside)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
       throw Exception('Failed to fetch data');
+
+
+
     }
   }
 
@@ -105,7 +179,7 @@ class _SelectImageState extends State<SelectImage> {
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: popUpColor,
-            title: Text('Edibility Test'),
+            title: Text('Edibility Test',style: TextStyle(color: popUpColorinside),),
             content: Text(
               message!,
               style: TextStyle(color: popUpColorinside),
@@ -139,6 +213,7 @@ class _SelectImageState extends State<SelectImage> {
     setState(() {
       if (clickedFile != null) {
         _imageFile = File(clickedFile.path);
+        _imageSelected = true;
       } else {
         print('No image selected.');
       }
@@ -164,14 +239,14 @@ class _SelectImageState extends State<SelectImage> {
             Center(
                 child: ListView(
                   children: [
-                    TypewriterAnimatedTextKit(
-                      text: ['Have an image?'],
-                      textStyle: TextStyle(
-                        fontSize: 40.0,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.orangeAccent,
-                      ),
-                    ),
+                    // TypewriterAnimatedTextKit(
+                    //   text: ['Have an image?'],
+                    //   textStyle: TextStyle(
+                    //     fontSize: 40.0,
+                    //     fontWeight: FontWeight.w900,
+                    //     color: Colors.orangeAccent,
+                    //   ),
+                    // ),
                     SizedBox(
                       height: 20,
                     ),
@@ -188,7 +263,9 @@ class _SelectImageState extends State<SelectImage> {
                       width: 250,
                       height: 400,
                     ),
-                    Padding(
+                    SizedBox(height: 50,),
+                    Container(
+                      height: 100.0,
                       padding: EdgeInsets.all(16.0),
                       child: ElevatedButton(
                         onPressed: () {
@@ -196,19 +273,22 @@ class _SelectImageState extends State<SelectImage> {
                           tooltip:
                           'Pick Image';
                         },
-                        child: Text('Select an image'),
+                        child: Text('Select an image',),
                         style: ButtonStyle(
+
                             backgroundColor:
-                            MaterialStateProperty.all(Colors.orangeAccent),
+                            MaterialStateProperty.all(Colors.purple[300]),
                             padding: MaterialStateProperty.all(EdgeInsets.all(12)),
                             textStyle:
-                            MaterialStateProperty.all(TextStyle(fontSize: 16))),
+                            MaterialStateProperty.all(TextStyle(fontSize: 25))),
                       ),
                     ),
-                    Padding(
+                    _imageSelected?Container(
+                      // width: 100.0,
+                      height: 100.0,
                       padding: EdgeInsets.all(16.0),
                       child: ElevatedButton(
-                        onPressed: () async {
+                        onPressed: _imageSelected?() async {
                           //show spinner
                           setState(() {
                             isLoading = true;
@@ -217,16 +297,16 @@ class _SelectImageState extends State<SelectImage> {
                           await  fetchData();
                           if(prediction>0.7){ uploadImageToFirebase(context);}
 
-                        },
-                        child: Text('Check edibility'),
+                        }:null,
+                        child: Text('Check edibility',style: TextStyle(color: popUpColorinside),),
                         style: ButtonStyle(
                             backgroundColor:
-                            MaterialStateProperty.all(Colors.orangeAccent),
+                            MaterialStateProperty.all(Colors.purple[300]),
                             padding: MaterialStateProperty.all(EdgeInsets.all(12)),
                             textStyle:
-                            MaterialStateProperty.all(TextStyle(fontSize: 16))),
+                            MaterialStateProperty.all(TextStyle(fontSize: 25))),
                       ),
-                    ),
+                    ):SizedBox(height: 0.0,),
                   ],
                 )),
             isLoading ? Center(child: CircularProgressIndicator())

@@ -7,11 +7,11 @@ import 'package:mushroom/screens/selectImage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'main.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Initialize Firebase
-  runApp(MyApp());
-}
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp(); // Initialize Firebase
+//   runApp(MyApp());
+// }
 
 class navBar extends StatefulWidget {
   const navBar({Key? key}) : super(key: key);
@@ -43,7 +43,7 @@ class _navBarState extends State<navBar> {
       appBar: AppBar(
         title: Text('Mushroom Classification App'),
         centerTitle: true,
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.purple[300],
       ),
       body: Container(
           decoration: BoxDecoration(
@@ -54,15 +54,15 @@ class _navBarState extends State<navBar> {
           child: screens[currentIndex]),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.teal,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black26,
+        backgroundColor: Colors.purple[300],
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white24,
         iconSize: 40,
         showUnselectedLabels: false,
         showSelectedLabels: false,
         currentIndex: currentIndex,
         onTap: (index) => setState(
-          () => currentIndex = index,
+              () => currentIndex = index,
         ),
         items: [
           BottomNavigationBarItem(

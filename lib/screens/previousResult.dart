@@ -54,23 +54,23 @@ class _ImageScreenState extends State<ImageScreen> {
         Expanded(
           child: Container(
 
-                  child: ListView.builder(
+            child: ListView.builder(
 
-                    itemCount: imageUrlList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return
-                          Container(
-                            padding: EdgeInsets.all(25),
-                            child: Image.network(
-                              imageUrlList[index],
-                             height: 350,
-                              width: 300,
-                            ),
-                          );
+              itemCount: imageUrlList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return
+                  Container(
+                    padding: EdgeInsets.all(25),
+                    child: Image.network(
+                      imageUrlList[index],
+                      height: 350,
+                      width: 300,
+                    ),
+                  );
 
 
-                    },
-                  ),
+              },
+            ),
 
 
 
